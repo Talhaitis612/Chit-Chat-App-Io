@@ -18,6 +18,7 @@ export class AppComponent {
   private storageArray: any = [];
   status = false;
   public showScreen = false;
+  public showLogin = true;
   public phone!: string;
   public currentUser: any;
   public selectedUser: any;
@@ -69,7 +70,8 @@ export class AppComponent {
     },
   ];
   modalService: any;
-
+  filteredlist: any = [];
+  meUser: any = [];
   constructor(
     // private modalService: NgbModal,
     private chatService: ChatService
@@ -81,33 +83,40 @@ export class AppComponent {
     this.login(this.currentUser.toString());
   }
   login(findUser: any): void {
-    this.currentUser = this.userList.find(
-      (user: any) => {
-        if(user.phone === findUser){
-          console.log('user ', findUser,' finded successfully...')
-          this.status = true;
-        }
+    console.log(findUser)
+    this.currentUser = this.userList.find((user: any) => {
+      if (user.phone === findUser) {
+        console.log('user ', findUser, ' finded successfully...');
+        this.status = true;
       }
-    );
-    // 
-    this.userList.filter((user: any) => {
-      user.phone != findUser
     });
-    console.log("current user", this.currentUser)
+    //
+    this.userList.filter((user: any) => {
+      if (user.phone != findUser) { // filtering
+        this.filteredlist.push(user);
+      }
+      else{
+        this.meUser.push(user) // for active user (me)
+      }
+    });
 
+    console.log('Filtered List is as follow', this.filteredlist);
+    console.log('Finded user ', this.meUser);
     if (this.status == true) {
+      this.showLogin = false;
       this.showScreen = true;
-    }
-    else{
-      alert('User Not found')
-      this.promptFunction();
+    } else {
+      alert('User Not found');
+
     }
   }
+
   ngOnInit(): void {
     this.chatService
       .getMessage()
       .subscribe((data: { user: string; room: string; message: string }) => {
         // this.messageArray.push(data);
+        console.log(this.messageArray);
         if (this.roomId) {
           setTimeout(() => {
             this.storageArray = this.chatService.getStorage();
@@ -125,10 +134,11 @@ export class AppComponent {
   }
 
   selectUserHandler(phone: string): void {
-    // this.currentUser = this.userList[0]
     this.selectedUser = this.userList.find((user: any) => user.phone === phone);
-    // console.log(this.selectedUser)
-    this.roomId = this.selectedUser.roomId[this.currentUser.id];
+    console.log('Selected User', this.selectedUser);
+
+    this.roomId = this.selectedUser.roomId[this.meUser[0].id];
+    console.log(this.roomId)
     this.messageArray = [];
 
     this.storageArray = this.chatService.getStorage();
@@ -139,8 +149,7 @@ export class AppComponent {
     if (storeIndex > -1) {
       this.messageArray = this.storageArray[storeIndex].chats;
     }
-
-    this.join(this.currentUser.name, this.roomId);
+    this.join(this.meUser[0].name, this.roomId);
   }
 
   join(username: string, roomId: string): void {
@@ -149,11 +158,11 @@ export class AppComponent {
 
   sendMessage() {
     this.chatService.sendMessage({
-      user: this.currentUser.name,
+      user: this.meUser[0].name,
       room: this.roomId,
       message: this.messageText,
     });
-
+    console.log(this.roomId);
     this.storageArray = this.chatService.getStorage();
     const storeIndex = this.storageArray.findIndex(
       (storage: any) => storage.roomId === this.roomId
@@ -161,7 +170,7 @@ export class AppComponent {
 
     if (storeIndex > -1) {
       this.storageArray[storeIndex].chats.push({
-        user: this.currentUser.name,
+        user: this.meUser[0].name,
         message: this.messageText,
       });
     } else {
@@ -169,7 +178,7 @@ export class AppComponent {
         roomId: this.roomId,
         chats: [
           {
-            user: this.currentUser.name,
+            user: this.meUser[0].name,
             message: this.messageText,
           },
         ],
