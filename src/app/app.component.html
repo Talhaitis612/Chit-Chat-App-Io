@@ -15,7 +15,6 @@
             <p class="username">{{ user.name }}</p>
           </div>
         </div>
-
       </div>
       <div class="lg:col-9 md:col-7 col">
         <div class="chat-container card">
@@ -30,8 +29,15 @@
             </div>
 
             <div class="chat-body">
-              <div *ngFor="let item of messageArray">
-                <p class="message-container">{{ item?.message }}</p>
+              <div *ngFor="let item of messageArray"
+              [ngClass]="[item.user === meUser[0].name ? 'same-user' : '']"
+              >
+                <p
+                  class="message-container"
+                  style="margin:10px 0"
+                >
+                  {{ item.message }}
+                </p>
               </div>
             </div>
 

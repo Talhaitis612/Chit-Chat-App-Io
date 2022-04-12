@@ -16,12 +16,10 @@ export class ChatService {
       transports: ['websocket', 'polling', 'flashsocket'],
     });
   }
-
-  joinRoom(data:any): void {
+  joinRoom(data: any): void {
     this.socket.emit('join', data);
   }
-
-  sendMessage(data:any): void {
+  sendMessage(data: any): void {
     this.socket.emit('message', data);
   }
 
@@ -30,19 +28,16 @@ export class ChatService {
       this.socket.on('new message', (data) => {
         observer.next(data);
       });
-
       return () => {
         this.socket.disconnect();
       };
     });
   }
-
   getStorage() {
     const storage: any = localStorage.getItem('chats');
     return storage ? JSON.parse(storage) : [];
   }
-
-  setStorage(data:any) {
+  setStorage(data: any) {
     localStorage.setItem('chats', JSON.stringify(data));
   }
 }

@@ -1,6 +1,5 @@
-import { Component, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChatService } from '../app/Services/chat.service';
-// import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +8,6 @@ import { ChatService } from '../app/Services/chat.service';
 })
 export class AppComponent {
   title = 'socket.io';
-
-  @ViewChild('popup', { static: false }) popup: any;
-
   public roomId!: string;
   public messageText!: string;
   public messageArray: { user: string; message: string }[] = [];
@@ -22,6 +18,8 @@ export class AppComponent {
   public phone!: string;
   public currentUser: any;
   public selectedUser: any;
+  filteredlist: any = [];
+  meUser: any = [];
 
   public userList: any = [
     {
@@ -69,13 +67,8 @@ export class AppComponent {
       },
     },
   ];
-  modalService: any;
-  filteredlist: any = [];
-  meUser: any = [];
-  constructor(
-    // private modalService: NgbModal,
-    private chatService: ChatService
-  ) {
+
+  constructor(private chatService: ChatService) {
     this.promptFunction();
   }
   promptFunction() {
@@ -83,69 +76,57 @@ export class AppComponent {
     this.login(this.currentUser.toString());
   }
   login(findUser: any): void {
-    console.log(findUser)
     this.currentUser = this.userList.find((user: any) => {
       if (user.phone === findUser) {
-        console.log('user ', findUser, ' finded successfully...');
         this.status = true;
       }
     });
-    //
     this.userList.filter((user: any) => {
-      if (user.phone != findUser) { // filtering
+      if (user.phone != findUser) {
         this.filteredlist.push(user);
-      }
-      else{
-        this.meUser.push(user) // for active user (me)
+      } else {
+        user.mine = true;
+        this.meUser.push(user); // for active user (me)
       }
     });
-
-    console.log('Filtered List is as follow', this.filteredlist);
-    console.log('Finded user ', this.meUser);
     if (this.status == true) {
       this.showLogin = false;
       this.showScreen = true;
     } else {
       alert('User Not found');
-
     }
   }
-
   ngOnInit(): void {
     this.chatService
       .getMessage()
-      .subscribe((data: { user: string; room: string; message: string }) => {
-        // this.messageArray.push(data);
-        console.log(this.messageArray);
-        if (this.roomId) {
-          setTimeout(() => {
-            this.storageArray = this.chatService.getStorage();
-            const storeIndex = this.storageArray.findIndex(
-              (storage: any) => storage.roomId === this.roomId
-            );
-            this.messageArray = this.storageArray[storeIndex].chats;
-          }, 500);
+      .subscribe(
+        (data: {
+          user: string;
+          room: string;
+          message: string;
+          mine: boolean;
+        }) => {
+          // this.messageArray.push(data);
+          if (this.roomId) {
+            setTimeout(() => {
+              this.storageArray = this.chatService.getStorage();
+              const storeIndex = this.storageArray.findIndex(
+                (storage: any) => storage.roomId === this.roomId
+              );
+              this.messageArray = this.storageArray[storeIndex].chats;
+            }, 500);
+          }
         }
-      });
+      );
   }
-
-  ngAfterViewInit(): void {
-    // this.openPopup(this.popup);
-  }
-
   selectUserHandler(phone: string): void {
     this.selectedUser = this.userList.find((user: any) => user.phone === phone);
-    console.log('Selected User', this.selectedUser);
-
     this.roomId = this.selectedUser.roomId[this.meUser[0].id];
-    console.log(this.roomId)
     this.messageArray = [];
-
     this.storageArray = this.chatService.getStorage();
     const storeIndex = this.storageArray.findIndex(
       (storage: any) => storage.roomId === this.roomId
     );
-
     if (storeIndex > -1) {
       this.messageArray = this.storageArray[storeIndex].chats;
     }
@@ -162,7 +143,6 @@ export class AppComponent {
       room: this.roomId,
       message: this.messageText,
     });
-    console.log(this.roomId);
     this.storageArray = this.chatService.getStorage();
     const storeIndex = this.storageArray.findIndex(
       (storage: any) => storage.roomId === this.roomId
@@ -183,10 +163,8 @@ export class AppComponent {
           },
         ],
       };
-
       this.storageArray.push(updateStorage);
     }
-
     this.chatService.setStorage(this.storageArray);
     this.messageText = '';
   }
