@@ -21,9 +21,9 @@ export class ChatService {
   }
   sendMessage(data: any): void {
     this.socket.emit('message', data);
-  }
 
-  getMessage(): Observable<any> {
+  }
+ getMessage(): Observable<any> {
     return new Observable<{ user: string; message: string }>((observer) => {
       this.socket.on('new message', (data) => {
         observer.next(data);

@@ -143,6 +143,7 @@ export class AppComponent {
       room: this.roomId,
       message: this.messageText,
     });
+
     this.storageArray = this.chatService.getStorage();
     const storeIndex = this.storageArray.findIndex(
       (storage: any) => storage.roomId === this.roomId
