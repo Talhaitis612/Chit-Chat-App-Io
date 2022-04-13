@@ -6,6 +6,7 @@ let server = http.Server(app);
 
 let socketIO = require('socket.io');
 let io = socketIO(server);
+let transcript = [];
 
 const port = process.env.PORT || 3000;
 //Make Coonection
@@ -17,7 +18,10 @@ io.on('connection', (socket) => {
     });
 // Emit Message
     socket.on('message', (data) => {
-        io.in(data.room).emit('new message', {user: data.user, message: data.message});
+      io.in(data.room).emit('new message', {user: data.user, message: data.message});
+      data.timestamp = Date.now();
+        transcript.push(data);
+        console.log({transcript});
         console.log(`${data.user} : ${data.message}`)
     });
 });
@@ -26,13 +30,4 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
     console.log(`started on port: ${port}`);
 });
-// Serve only the static files form the dist directory
-app.use(express.static(__dirname + '/dist/<name-of-app>'));
 
-app.get('/*', function(req,res) {
-
-res.sendFile(path.join(__dirname+'/dist/<name-of-app>/index.html'));
-});
-
-// Start the app by listening on the default Heroku port
-app.listen(process.env.PORT || 8080);

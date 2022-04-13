@@ -106,16 +106,19 @@ export class AppComponent {
           message: string;
           mine: boolean;
         }) => {
-          // this.messageArray.push(data);
-          if (this.roomId) {
-            setTimeout(() => {
-              this.storageArray = this.chatService.getStorage();
-              const storeIndex = this.storageArray.findIndex(
-                (storage: any) => storage.roomId === this.roomId
-              );
-              this.messageArray = this.storageArray[storeIndex].chats;
-            }, 500);
-          }
+          this.messageArray.push(data);
+          // console.log('Message Array: ', this.messageArray)
+          // if (this.roomId) {
+          //   setTimeout(() => {
+          //     // this.storageArray = this.chatService.getStorage();
+          //     // console.log('Message Array: ', this.messageArray)
+          //     // const storeIndex = this.messageArray.findIndex(
+          //     //   (storage: any) => storage.roomId === this.roomId
+          //     // );
+          //     // console.log(storeIndex)
+          //     // this.messageArray = this.storageArray[storeIndex].chats;
+          //   }, 500);
+          // }
         }
       );
   }
@@ -123,13 +126,13 @@ export class AppComponent {
     this.selectedUser = this.userList.find((user: any) => user.phone === phone);
     this.roomId = this.selectedUser.roomId[this.meUser[0].id];
     this.messageArray = [];
-    this.storageArray = this.chatService.getStorage();
-    const storeIndex = this.storageArray.findIndex(
-      (storage: any) => storage.roomId === this.roomId
-    );
-    if (storeIndex > -1) {
-      this.messageArray = this.storageArray[storeIndex].chats;
-    }
+    // this.storageArray = this.chatService.getStorage();
+    // const storeIndex = this.storageArray.findIndex(
+    //   (storage: any) => storage.roomId === this.roomId
+    // );
+    // if (storeIndex > -1) {
+    //   this.messageArray = this.storageArray[storeIndex].chats;
+    // }
     this.join(this.meUser[0].name, this.roomId);
   }
 
@@ -144,29 +147,32 @@ export class AppComponent {
       message: this.messageText,
     });
 
-    this.storageArray = this.chatService.getStorage();
-    const storeIndex = this.storageArray.findIndex(
-      (storage: any) => storage.roomId === this.roomId
-    );
 
-    if (storeIndex > -1) {
-      this.storageArray[storeIndex].chats.push({
-        user: this.meUser[0].name,
-        message: this.messageText,
-      });
-    } else {
-      const updateStorage = {
-        roomId: this.roomId,
-        chats: [
-          {
-            user: this.meUser[0].name,
-            message: this.messageText,
-          },
-        ],
-      };
-      this.storageArray.push(updateStorage);
-    }
-    this.chatService.setStorage(this.storageArray);
+    // this.storageArray = this.chatService.getStorage();
+    // const storeIndex = this.storageArray.findIndex(
+    //   (storage: any) => storage.roomId === this.roomId
+    // );
+    // console.log(this.meUser[0].name,' : ', this.roomId)
+    // console.log(this.messageText)
+    // if (storeIndex > -1) {
+    //   this.storageArray[storeIndex].chats.push({
+    //     user: this.meUser[0].name,
+    //     message: this.messageText,
+    //   });
+    // } else {
+    //   const updateStorage = {
+    //     roomId: this.roomId,
+    //     chats: [
+    //       {
+    //         user: this.meUser[0].name,
+    //         message: this.messageText,
+    //       },
+    //     ],
+    //   };
+    //   this.storageArray.push(updateStorage);
+    // }
+    // this.chatService.returnMessage(this.messageText);
+
     this.messageText = '';
   }
 }
