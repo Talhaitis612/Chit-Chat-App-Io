@@ -108,10 +108,10 @@ export class AppComponent {
           mine: boolean;
         }) => {
           // console.log('hey',this.messageArray);
-          this.messageArray.push(data);
-          console.log('data array', this.messageArray);
-          this.messageArray = this.messageArray;
-          console.log("Transcript Array : ",this.messageArray);
+          this.messageArray[0] = data;
+          console.log('data array', this.messageArray[0]);
+          this.messageArray = this.messageArray[0].transcript;
+          console.log("Transcript time : ",this.messageArray);
         }
         );
         let vari = await this.chatService.updateMessage();

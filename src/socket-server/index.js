@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
         console.log({transcript});
         // console.log(`${data.user} : ${data.message}`)
     });
-    // socket.emit('new message', {transcript})
+    socket.emit('new message', {transcript})
     socket.emit('transcript', {transcript})
 });
 
