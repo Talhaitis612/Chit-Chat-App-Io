@@ -29,15 +29,17 @@
             </div>
 
             <div class="chat-body">
-              <div *ngFor="let item of messageArray"
-              [ngClass]="[item.user === meUser[0].name ? 'same-user' : '']"
-              >
-                <p
-                  class="message-container"
-                  style="margin:10px 0"
+              <div *ngFor="let item of messageArray">
+                <div *ngIf="item.room === roomId"
+                [ngClass]="[item.user === meUser.name ? 'same-user' : '']"
                 >
-                  {{ item.message }}
-                </p>
+                  <p
+                    class="message-container"
+                    style="margin:10px 0"
+                  >
+                    {{ item.message }}
+                  </p>
+                </div>
               </div>
             </div>
 

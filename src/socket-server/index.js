@@ -1,3 +1,4 @@
+//Server
 let express = require('express');
 let app = express();
 
@@ -18,16 +19,20 @@ io.on('connection', (socket) => {
     });
 // Emit Message
     socket.on('message', (data) => {
-      io.in(data.room).emit('new message', {user: data.user, message: data.message});
+      io.in(data.room).emit('new message', {user: data.user, message: data.message, room: data.room});
       data.timestamp = Date.now();
         transcript.push(data);
+        socket.emit('transcript', {transcript})
         console.log({transcript});
-        console.log(`${data.user} : ${data.message}`)
+        // console.log(`${data.user} : ${data.message}`)
     });
+    // socket.emit('new message', {transcript})
+    socket.emit('transcript', {transcript})
 });
 
 // Server listening on port
 server.listen(port, () => {
     console.log(`started on port: ${port}`);
 });
+
 

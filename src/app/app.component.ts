@@ -1,3 +1,4 @@
+//App Component
 import { Component } from '@angular/core';
 import { ChatService } from '../app/Services/chat.service';
 
@@ -10,8 +11,8 @@ export class AppComponent {
   title = 'socket.io';
   public roomId!: string;
   public messageText!: string;
-  public messageArray: { user: string; message: string }[] = [];
-  private storageArray: any = [];
+  public messageArray: any = [];
+  public storageArray: any = [];
   status = false;
   public showScreen = false;
   public showLogin = true;
@@ -19,7 +20,7 @@ export class AppComponent {
   public currentUser: any;
   public selectedUser: any;
   filteredlist: any = [];
-  meUser: any = [];
+  meUser: any;
 
   public userList: any = [
     {
@@ -86,7 +87,7 @@ export class AppComponent {
         this.filteredlist.push(user);
       } else {
         user.mine = true;
-        this.meUser.push(user); // for active user (me)
+        this.meUser = user;
       }
     });
     if (this.status == true) {
@@ -96,83 +97,44 @@ export class AppComponent {
       alert('User Not found');
     }
   }
-  ngOnInit(): void {
+  async ngOnInit() {
     this.chatService
-      .getMessage()
-      .subscribe(
+    .getMessage()
+    .subscribe(
         (data: {
           user: string;
           room: string;
           message: string;
           mine: boolean;
         }) => {
+          // console.log('hey',this.messageArray);
           this.messageArray.push(data);
-          // console.log('Message Array: ', this.messageArray)
-          // if (this.roomId) {
-          //   setTimeout(() => {
-          //     // this.storageArray = this.chatService.getStorage();
-          //     // console.log('Message Array: ', this.messageArray)
-          //     // const storeIndex = this.messageArray.findIndex(
-          //     //   (storage: any) => storage.roomId === this.roomId
-          //     // );
-          //     // console.log(storeIndex)
-          //     // this.messageArray = this.storageArray[storeIndex].chats;
-          //   }, 500);
-          // }
+          console.log('data array', this.messageArray);
+          this.messageArray = this.messageArray;
+          console.log("Transcript Array : ",this.messageArray);
         }
-      );
+        );
+        let vari = await this.chatService.updateMessage();
+        console.log('vari : ', vari)
+      }
+      selectUserHandler(phone: string): void {
+        // this.ngOnInit();
+        this.selectedUser = this.userList.find((user: any) => user.phone === phone);
+        this.roomId = this.selectedUser.roomId[this.meUser.id];
+    this.join(this.meUser.name, this.roomId);
   }
-  selectUserHandler(phone: string): void {
-    this.selectedUser = this.userList.find((user: any) => user.phone === phone);
-    this.roomId = this.selectedUser.roomId[this.meUser[0].id];
-    this.messageArray = [];
-    // this.storageArray = this.chatService.getStorage();
-    // const storeIndex = this.storageArray.findIndex(
-    //   (storage: any) => storage.roomId === this.roomId
-    // );
-    // if (storeIndex > -1) {
-    //   this.messageArray = this.storageArray[storeIndex].chats;
-    // }
-    this.join(this.meUser[0].name, this.roomId);
-  }
-
   join(username: string, roomId: string): void {
     this.chatService.joinRoom({ user: username, room: roomId });
   }
-
   sendMessage() {
     this.chatService.sendMessage({
-      user: this.meUser[0].name,
+      user: this.meUser.name,
       room: this.roomId,
       message: this.messageText,
     });
-
-
-    // this.storageArray = this.chatService.getStorage();
-    // const storeIndex = this.storageArray.findIndex(
-    //   (storage: any) => storage.roomId === this.roomId
-    // );
-    // console.log(this.meUser[0].name,' : ', this.roomId)
-    // console.log(this.messageText)
-    // if (storeIndex > -1) {
-    //   this.storageArray[storeIndex].chats.push({
-    //     user: this.meUser[0].name,
-    //     message: this.messageText,
-    //   });
-    // } else {
-    //   const updateStorage = {
-    //     roomId: this.roomId,
-    //     chats: [
-    //       {
-    //         user: this.meUser[0].name,
-    //         message: this.messageText,
-    //       },
-    //     ],
-    //   };
-    //   this.storageArray.push(updateStorage);
-    // }
-    // this.chatService.returnMessage(this.messageText);
-
     this.messageText = '';
+    // this.ngOnInit();
+
   }
 }
+
