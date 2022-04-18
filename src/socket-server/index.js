@@ -14,19 +14,20 @@ const port = process.env.PORT || 3000;
 io.on('connection', (socket) => {
     socket.on('join', (data) => {
         socket.join(data.room);
-        socket.broadcast.to(data.room).emit('user joined');
-        console.log('user joined')
+        socket.broadcast.to(data.room).emit('user joined ok!');
+        console.log('user joined server')
     });
 // Emit Message
+    // Function calls on new message
     socket.on('message', (data) => {
-      io.in(data.room).emit('new message', {user: data.user, message: data.message, room: data.room});
       data.timestamp = Date.now();
+      io.in(data.room).emit('new message', {user: data.user, message: data.message, room: data.room, timestamp: data.timestamp});
         transcript.push(data);
-        socket.emit('transcript', {transcript})
-        console.log({transcript});
-        // console.log(`${data.user} : ${data.message}`)
+        console.log(transcript)
     });
+    // Function calls on every new message
     socket.emit('new message', {transcript})
+    // Function calls on every reload
     socket.emit('transcript', {transcript})
 });
 

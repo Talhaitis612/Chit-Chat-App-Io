@@ -38,7 +38,7 @@
                     style="position: relative; padding-bottom: 20px; min-width: 75px; text-align: left;"
                   >
                     {{ item.message }}
-                    <span>11:13pm</span>
+                    <span>{{item.timestamp | date:'shortTime'}}</span>
                   </p>
                 </div>
               </div>

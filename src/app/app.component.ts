@@ -97,30 +97,31 @@ export class AppComponent {
       alert('User Not found');
     }
   }
-  async ngOnInit() {
+  ngOnInit() {
     this.chatService
-    .getMessage()
-    .subscribe(
+      .getMessage()
+      .subscribe(
         (data: {
           user: string;
           room: string;
           message: string;
           mine: boolean;
         }) => {
-          // console.log('hey',this.messageArray);
-          this.messageArray[0] = data;
-          console.log('data array', this.messageArray[0]);
-          this.messageArray = this.messageArray[0].transcript;
-          console.log("Transcript time : ",this.messageArray);
+          // To avoid undefined push error occurs
+          if(data.message !== ''){
+            this.messageArray.push(data);
+            if (this.messageArray.length == 1) {
+              this.messageArray[0].transcript.push(data);
+              this.messageArray = this.messageArray[0].transcript;
+            }
+          }
         }
-        );
-        let vari = await this.chatService.updateMessage();
-        console.log('vari : ', vari)
-      }
-      selectUserHandler(phone: string): void {
-        // this.ngOnInit();
-        this.selectedUser = this.userList.find((user: any) => user.phone === phone);
-        this.roomId = this.selectedUser.roomId[this.meUser.id];
+      );
+  }
+  selectUserHandler(phone: string): void {
+    console.log(this.messageArray)
+    this.selectedUser = this.userList.find((user: any) => user.phone === phone);
+    this.roomId = this.selectedUser.roomId[this.meUser.id];
     this.join(this.meUser.name, this.roomId);
   }
   join(username: string, roomId: string): void {
@@ -132,9 +133,7 @@ export class AppComponent {
       room: this.roomId,
       message: this.messageText,
     });
+    console.log(this.messageArray)
     this.messageText = '';
-    // this.ngOnInit();
-
   }
 }
-
